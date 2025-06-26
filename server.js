@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
-const PORT = 3002;
+const PORT = process.env.PORT || 3002;
+
 
 // Uploads klasörü
 const uploadDir = path.join(__dirname, 'uploads');
