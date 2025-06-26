@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mimarcad - CAD Çizim Programı</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            overflow: hidden !important;
+            height: 100% !important;
+            width: 100% !important;
+            background: #f5f5f5;
+        }
+        #cad-canvas {
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            width: 1200px !important;
+            height: 800px !important;
+            box-sizing: content-box !important;
+            background: #fff;
+        }
+        #coordinates {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            background: rgba(52, 73, 94, 0.9);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="password-modal" style="position:fixed;z-index:99999;top:0;left:0;width:100vw;height:100vh;background:rgba(44,62,80,0.96);display:flex;align-items:center;justify-content:center;">
+        <div style="background:#fff;padding:36px 32px 28px 32px;border-radius:16px;box-shadow:0 8px 32px #2223;min-width:320px;display:flex;flex-direction:column;align-items:center;">
+            <h2 style="margin-bottom:18px;color:#222;font-size:22px;">Giriş Şifresi</h2>
+            <input id="password-input" type="password" placeholder="Şifre" style="padding:10px 16px;font-size:18px;border-radius:8px;border:1.5px solid #2980b9;width:100%;margin-bottom:16px;outline:none;">
+            <button id="password-submit" style="padding:8px 0;width:100%;background:#2980b9;color:#fff;font-weight:600;font-size:17px;border:none;border-radius:8px;cursor:pointer;">Giriş Yap</button>
+            <div id="password-error" style="color:#e74c3c;font-size:15px;margin-top:10px;display:none;">Hatalı şifre!</div>
+        </div>
+    </div>
+    <div class="cad-container" style="display:none;">
+        <div class="toolbar">
+            <button id="select-tool" class="tool-btn active" title="Seç (V)">🖱️</button>
+            <button id="line-tool" class="tool-btn" title="Çizgi (L)">/</button>
+            <button id="rectangle-tool" class="tool-btn" title="Dikdörtgen (R)">▭</button>
+            <button id="square-tool" class="tool-btn" title="Kare (S)">■</button>
+            <button id="dimension-tool" class="tool-btn" title="Ölçü (D)">↔️</button>
+            <button id="image-tool" class="tool-btn" title="Resim Ekle (I)">🖼️</button>
+            <button id="delete-btn" class="tool-btn danger" title="Sil (Delete)">🗑️</button>
+            <button id="door-tool" class="tool-btn" title="Kapı (K)">🚪</button>
+            <button id="text-tool" class="tool-btn" title="Metin (T)">T</button>
+            <div id="toolbar-drawing-settings" style="margin:18px 0 0 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <label for="default-stroke-width" style="color:#7ed6df;font-size:13px;font-weight:600;">Kalınlık</label>
+                <input type="number" id="default-stroke-width" min="1" max="12" value="2" style="width:48px;text-align:center;border-radius:8px;border:1.5px solid #2980b9;padding:4px 0;background:#22313a;color:#fff;">
+            </div>
+            <div style="margin:24px 0 0 0;display:flex;flex-direction:column;align-items:center;gap:8px;">
+                <button id="save-project-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#27ae60;color:#fff;font-weight:600;border:none;cursor:pointer;">Kaydet</button>
+                <button id="load-project-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#2980b9;color:#fff;font-weight:600;border:none;cursor:pointer;">Aç</button>
+                <input type="file" id="load-project-input" accept="application/json" style="display:none;">
+            </div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="cad-canvas" width="1200" height="800"></canvas>
+            <div id="coordinates" class="coordinates"></div>
+            <input type="file" id="image-input" accept="image/*" style="display:none;">
+        </div>
+        <div class="properties-panel">
+            <h3>Özellikler</h3>
+            <div id="properties-content">
+                <p>Bir nesne seçin</p>
+            </div>
+        </div>
+    </div>
+    <script src="cad.js"></script>
+</body>
+</html> 
