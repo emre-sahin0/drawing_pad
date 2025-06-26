@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
 
@@ -22,6 +23,7 @@ const upload = multer({ storage });
 app.use(express.json({limit: '20mb'}));
 app.use('/uploads', express.static(uploadDir));
 app.use(express.static(__dirname));
+app.use(bodyParser.json());
 
 // Resim yükle
 app.post('/upload', upload.single('image'), (req, res) => {
@@ -51,6 +53,15 @@ app.get('/load-project', (req, res) => {
     if (!fs.existsSync(file)) return res.json([]);
     const data = fs.readFileSync(file, 'utf8');
     res.json(JSON.parse(data));
+});
+
+app.post('/login', (req, res) => {
+    const { password } = req.body;
+    if (password === 'merve8387') {
+        res.json({ success: true });
+    } else {
+        res.json({ success: false });
+    }
 });
 
 app.listen(PORT, () => {

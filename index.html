@@ -83,6 +83,35 @@
             </div>
         </div>
     </div>
+    <script>
+    // Şifre kontrolü (artık backend ile)
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('password-modal');
+        const input = document.getElementById('password-input');
+        const btn = document.getElementById('password-submit');
+        const error = document.getElementById('password-error');
+        const cadContainer = document.querySelector('.cad-container');
+        function checkPassword() {
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: input.value })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    modal.style.display = 'none';
+                    cadContainer.style.display = '';
+                } else {
+                    error.style.display = 'block';
+                }
+            });
+        }
+        btn.onclick = checkPassword;
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+        input.focus();
+    });
+    </script>
     <script src="cad.js"></script>
 </body>
 </html> 
