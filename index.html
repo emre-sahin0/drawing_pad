@@ -68,6 +68,7 @@
             <div style="margin:24px 0 0 0;display:flex;flex-direction:column;align-items:center;gap:8px;">
                 <button id="save-project-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#27ae60;color:#fff;font-weight:600;border:none;cursor:pointer;">Kaydet</button>
                 <button id="load-project-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#2980b9;color:#fff;font-weight:600;border:none;cursor:pointer;">Aç</button>
+                <button id="save-pdf-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#8e44ad;color:#fff;font-weight:600;border:none;cursor:pointer;">PDF</button>
                 <input type="file" id="load-project-input" accept="application/json" style="display:none;">
             </div>
         </div>
@@ -112,6 +113,7 @@
         input.focus();
     });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="cad.js"></script>
 </body>
 </html> 

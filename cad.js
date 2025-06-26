@@ -1438,4 +1438,22 @@ document.addEventListener('DOMContentLoaded', () => {
     input.focus();
     // CAD başlat
     new CADApp();
+
+    // PDF olarak kaydetme
+    const pdfBtn = document.getElementById('save-pdf-btn');
+    if (pdfBtn) {
+        pdfBtn.onclick = function() {
+            const canvas = document.getElementById('cad-canvas');
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            // PDF boyutunu canvas boyutuna göre ayarla (mm cinsinden)
+            const pdf = new jsPDF({
+                orientation: canvas.width > canvas.height ? 'l' : 'p',
+                unit: 'mm',
+                format: [canvas.width * 0.264583, canvas.height * 0.264583]
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * 0.264583, canvas.height * 0.264583);
+            pdf.save('mimarcad-cizim.pdf');
+        };
+    }
 }); 
