@@ -5,15 +5,15 @@ class CADApp {
         this.coordinatesDiv = document.getElementById('coordinates');
         this.propertiesContent = document.getElementById('properties-content');
         this.imageInput = document.getElementById('image-input');
-        this.gridSize = 30;
+        this.gridSize = 20;
         this.majorGridInterval = 5;
         this.gridColor = '#e0e0e0';
         this.majorGridColor = '#c0c0c0';
         this.zoom = 1;
         this.minZoom = 0.1;
         this.maxZoom = 10;
-        this.panX = 400;
-        this.panY = 300;
+        this.panX = 0;
+        this.panY = 0;
         this.currentTool = 'select';
         this.isDrawing = false;
         this.startPoint = null;
@@ -490,91 +490,42 @@ class CADApp {
         };
     }
     findSnapPoint(worldX, worldY) {
-        // Grid snap (öncelik en düşük)
+        // Grid snap
         const gridSnap = {
             x: Math.round(worldX / this.gridSize) * this.gridSize,
             y: Math.round(worldY / this.gridSize) * this.gridSize
         };
         const distGrid = Math.hypot(worldX - gridSnap.x, worldY - gridSnap.y);
-        let bestSnap = null;
-        let bestDist = this.snapDistance / this.zoom;
-        
-        // Nesne noktalarına snap (öncelik yüksek)
+        if (distGrid < this.snapDistance / this.zoom) return gridSnap;
+        // Line endpoints snap
         for (const obj of this.objects) {
             if (obj.type === 'line' || obj.type === 'dimension') {
-                // Çizgi başlangıç ve bitiş noktaları
                 for (const pt of [obj.start, obj.end]) {
                     const dist = Math.hypot(worldX - pt.x, worldY - pt.y);
-                    if (dist < bestDist) {
-                        bestSnap = pt;
-                        bestDist = dist;
-                    }
-                }
-                // Çizgi orta noktası
-                const midPoint = {
-                    x: (obj.start.x + obj.end.x) / 2,
-                    y: (obj.start.y + obj.end.y) / 2
-                };
-                const midDist = Math.hypot(worldX - midPoint.x, worldY - midPoint.y);
-                if (midDist < bestDist) {
-                    bestSnap = midPoint;
-                    bestDist = midDist;
+                    if (dist < this.snapDistance / this.zoom) return pt;
                 }
             } else if (obj.type === 'rectangle') {
-                // Dikdörtgen köşeleri ve orta noktaları
-                const points = [
-                    {x: obj.x, y: obj.y}, // sol-üst
-                    {x: obj.x + obj.width, y: obj.y}, // sağ-üst
-                    {x: obj.x, y: obj.y + obj.height}, // sol-alt
-                    {x: obj.x + obj.width, y: obj.y + obj.height}, // sağ-alt
-                    {x: obj.x + obj.width/2, y: obj.y}, // üst-orta
-                    {x: obj.x + obj.width/2, y: obj.y + obj.height}, // alt-orta
-                    {x: obj.x, y: obj.y + obj.height/2}, // sol-orta
-                    {x: obj.x + obj.width, y: obj.y + obj.height/2} // sağ-orta
-                ];
-                for (const pt of points) {
+                for (const pt of [
+                    {x: obj.x, y: obj.y},
+                    {x: obj.x + obj.width, y: obj.y},
+                    {x: obj.x, y: obj.y + obj.height},
+                    {x: obj.x + obj.width, y: obj.y + obj.height}
+                ]) {
                     const dist = Math.hypot(worldX - pt.x, worldY - pt.y);
-                    if (dist < bestDist) {
-                        bestSnap = pt;
-                        bestDist = dist;
-                    }
+                    if (dist < this.snapDistance / this.zoom) return pt;
                 }
             } else if (obj.type === 'square') {
-                // Kare köşeleri ve orta noktaları
-                const points = [
+                for (const pt of [
                     {x: obj.x, y: obj.y},
                     {x: obj.x + obj.size, y: obj.y},
                     {x: obj.x, y: obj.y + obj.size},
-                    {x: obj.x + obj.size, y: obj.y + obj.size},
-                    {x: obj.x + obj.size/2, y: obj.y},
-                    {x: obj.x + obj.size/2, y: obj.y + obj.size},
-                    {x: obj.x, y: obj.y + obj.size/2},
-                    {x: obj.x + obj.size, y: obj.y + obj.size/2}
-                ];
-                for (const pt of points) {
+                    {x: obj.x + obj.size, y: obj.y + obj.size}
+                ]) {
                     const dist = Math.hypot(worldX - pt.x, worldY - pt.y);
-                    if (dist < bestDist) {
-                        bestSnap = pt;
-                        bestDist = dist;
-                    }
-                }
-            } else if (obj.type === 'door') {
-                // Kapı başlangıç ve bitiş noktaları
-                const x2 = obj.x + Math.cos(obj.angle) * obj.length;
-                const y2 = obj.y + Math.sin(obj.angle) * obj.length;
-                for (const pt of [{x: obj.x, y: obj.y}, {x: x2, y: y2}]) {
-                    const dist = Math.hypot(worldX - pt.x, worldY - pt.y);
-                    if (dist < bestDist) {
-                        bestSnap = pt;
-                        bestDist = dist;
-                    }
+                    if (dist < this.snapDistance / this.zoom) return pt;
                 }
             }
         }
-        
-        // En iyi snap noktası varsa onu döndür, yoksa grid snap
-        if (bestSnap) return bestSnap;
-        if (distGrid < this.snapDistance / this.zoom) return gridSnap;
         return null;
     }
     getObjectAt(worldPos, skipObject = null) {
@@ -1136,57 +1087,46 @@ class CADApp {
                 this.ctx.strokeRect(obj.x, obj.y, obj.size, obj.size);
             } else if (obj.type === 'dimension') {
                 this.ctx.strokeStyle = (obj === this.selectedObject) ? '#27ae60' : '#27ae60';
-                this.ctx.lineWidth = (obj.strokeWidth || this.defaultStrokeWidth) + 1;
+                this.ctx.lineWidth = (obj.strokeWidth || this.defaultStrokeWidth) + 2;
                 this.ctx.beginPath();
                 this.ctx.moveTo(obj.start.x, obj.start.y);
                 this.ctx.lineTo(obj.end.x, obj.end.y);
                 this.ctx.stroke();
-                
-                // Ölçü çizgilerini çiz
                 const dx = obj.end.x - obj.start.x;
                 const dy = obj.end.y - obj.start.y;
                 const len = Math.sqrt(dx*dx + dy*dy);
-                const tx = -dy / len * 12;
-                const ty = dx / len * 12;
-                
-                // Başlangıç ve bitiş çizgileri
+                const tx = -dy / len * 14;
+                const ty = dx / len * 14;
                 this.ctx.beginPath();
                 this.ctx.moveTo(obj.start.x - tx, obj.start.y - ty);
                 this.ctx.lineTo(obj.start.x + tx, obj.start.y + ty);
                 this.ctx.moveTo(obj.end.x - tx, obj.end.y - ty);
                 this.ctx.lineTo(obj.end.x + tx, obj.end.y + ty);
                 this.ctx.strokeStyle = '#27ae60';
-                this.ctx.lineWidth = (obj.strokeWidth || this.defaultStrokeWidth) + 1;
+                this.ctx.lineWidth = (obj.strokeWidth || this.defaultStrokeWidth) + 2;
                 this.ctx.stroke();
-                
-                // Ölçü yazısı
                 const midX = (obj.start.x + obj.end.x) / 2;
                 const midY = (obj.start.y + obj.end.y) / 2;
-                const offset = 25;
+                const offset = 28;
                 const nx = -dy / len;
                 const ny = dx / len;
                 const labelX = midX + nx * offset;
-                const labelY = midY + ny * offset;
-                
+                const labelY = midY + ny * offset - 6;
                 this.ctx.save();
                 // Arka plan kutusu
-                this.ctx.font = 'bold 16px Arial';
-                const distanceText = (obj.distance || len).toFixed(1) + ' cm';
-                const metrics = this.ctx.measureText(distanceText);
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-                this.ctx.fillRect(labelX - metrics.width/2 - 6, labelY - 12, metrics.width + 12, 24);
-                
-                // Çerçeve
-                this.ctx.strokeStyle = '#27ae60';
-                this.ctx.lineWidth = 1;
-                this.ctx.strokeRect(labelX - metrics.width/2 - 6, labelY - 12, metrics.width + 12, 24);
-                
+                this.ctx.font = 'bold 18px Arial';
+                const text = (obj.distance || len).toFixed(1);
+                const metrics = this.ctx.measureText(text);
+                this.ctx.fillStyle = 'white';
+                this.ctx.globalAlpha = 0.85;
+                this.ctx.fillRect(labelX - metrics.width/2 - 8, labelY - 16, metrics.width + 16, 28);
+                this.ctx.globalAlpha = 1.0;
                 // Yazı
                 this.ctx.fillStyle = '#27ae60';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
-                this.ctx.font = 'bold 16px Arial';
-                this.ctx.fillText(distanceText, labelX, labelY);
+                this.ctx.font = 'bold 18px Arial';
+                this.ctx.fillText(text, labelX, labelY);
                 this.ctx.restore();
             } else if (obj.type === 'image' && obj.image) {
                 this.ctx.save();

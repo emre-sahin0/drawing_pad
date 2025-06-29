@@ -15,6 +15,53 @@
             width: 100% !important;
             background: #f5f5f5;
         }
+        .toolbar {
+            width: 90px;
+            background: #34495e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 5px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .tool-btn {
+            width: 75px;
+            height: 55px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 8px;
+            background: #5a6c7d;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .tool-btn:hover {
+            background: #4a5a6b;
+            transform: translateY(-1px);
+        }
+        .tool-btn.active {
+            background: #3498db;
+        }
+        .tool-btn.danger {
+            background: #e74c3c;
+        }
+        .tool-btn.danger:hover {
+            background: #c0392b;
+        }
+        .tool-icon {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        .tool-text {
+            font-size: 9px;
+            font-weight: 600;
+        }
         #cad-canvas {
             display: block;
             position: absolute;
@@ -52,23 +99,50 @@
     </div>
     <div class="cad-container" style="display:none;">
         <div class="toolbar">
-            <button id="select-tool" class="tool-btn active" title="Seç (V)">🖱️</button>
-            <button id="line-tool" class="tool-btn" title="Çizgi (L)">/</button>
-            <button id="rectangle-tool" class="tool-btn" title="Dikdörtgen (R)">▭</button>
-            <button id="square-tool" class="tool-btn" title="Kare (S)">■</button>
-            <button id="dimension-tool" class="tool-btn" title="Ölçü (D)">↔️</button>
-            <button id="image-tool" class="tool-btn" title="Resim Ekle (I)">🖼️</button>
-            <button id="delete-btn" class="tool-btn danger" title="Sil (Delete)">🗑️</button>
-            <button id="door-tool" class="tool-btn" title="Kapı (K)">🚪</button>
-            <button id="text-tool" class="tool-btn" title="Metin (T)">T</button>
+            <button id="select-tool" class="tool-btn active" title="Seç (V)">
+                <span class="tool-icon">🖱️</span>
+                <span class="tool-text">Seç</span>
+            </button>
+            <button id="line-tool" class="tool-btn" title="Çizgi (L)">
+                <span class="tool-icon">📏</span>
+                <span class="tool-text">Çizgi</span>
+            </button>
+            <button id="rectangle-tool" class="tool-btn" title="Dikdörtgen (R)">
+                <span class="tool-icon">▭</span>
+                <span class="tool-text">Dikdörtgen</span>
+            </button>
+            <button id="square-tool" class="tool-btn" title="Kare (S)">
+                <span class="tool-icon">■</span>
+                <span class="tool-text">Kare</span>
+            </button>
+            <button id="dimension-tool" class="tool-btn" title="Ölçü (D)">
+                <span class="tool-icon">📐</span>
+                <span class="tool-text">Ölçü</span>
+            </button>
+            <button id="image-tool" class="tool-btn" title="Resim Ekle (I)">
+                <span class="tool-icon">🖼️</span>
+                <span class="tool-text">Resim</span>
+            </button>
+            <button id="door-tool" class="tool-btn" title="Kapı (K)">
+                <span class="tool-icon">🚪</span>
+                <span class="tool-text">Kapı</span>
+            </button>
+            <button id="text-tool" class="tool-btn" title="Metin (T)">
+                <span class="tool-icon">📝</span>
+                <span class="tool-text">Metin</span>
+            </button>
+            <button id="delete-btn" class="tool-btn danger" title="Sil (Delete)">
+                <span class="tool-icon">🗑️</span>
+                <span class="tool-text">Sil</span>
+            </button>
             <div id="toolbar-drawing-settings" style="margin:18px 0 0 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-                <label for="default-stroke-width" style="color:#7ed6df;font-size:13px;font-weight:600;">Kalınlık</label>
+                <label for="default-stroke-width" style="color:#7ed6df;font-size:12px;font-weight:600;">Kalınlık</label>
                 <input type="number" id="default-stroke-width" min="1" max="12" value="2" style="width:48px;text-align:center;border-radius:8px;border:1.5px solid #2980b9;padding:4px 0;background:#22313a;color:#fff;">
             </div>
             <div style="margin:24px 0 0 0;display:flex;flex-direction:column;align-items:center;gap:8px;">
-                <button id="save-project-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#27ae60;color:#fff;font-weight:600;border:none;cursor:pointer;">Kaydet</button>
-                <button id="load-project-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#2980b9;color:#fff;font-weight:600;border:none;cursor:pointer;">Aç</button>
-                <button id="save-pdf-btn" style="width:56px;padding:6px 0;border-radius:8px;background:#8e44ad;color:#fff;font-weight:600;border:none;cursor:pointer;">PDF</button>
+                <button id="save-project-btn" style="width:70px;padding:8px 0;border-radius:8px;background:#27ae60;color:#fff;font-weight:600;border:none;cursor:pointer;font-size:11px;">Kaydet</button>
+                <button id="load-project-btn" style="width:70px;padding:8px 0;border-radius:8px;background:#2980b9;color:#fff;font-weight:600;border:none;cursor:pointer;font-size:11px;">Aç</button>
+                <button id="save-pdf-btn" style="width:70px;padding:8px 0;border-radius:8px;background:#8e44ad;color:#fff;font-weight:600;border:none;cursor:pointer;font-size:11px;">PDF</button>
                 <input type="file" id="load-project-input" accept="application/json" style="display:none;">
             </div>
         </div>
